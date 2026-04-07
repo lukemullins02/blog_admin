@@ -1,11 +1,11 @@
-import "./App.css";
-import Login from "./components/login";
+import AuthProvider from "./provider/authProvider";
+import Routes from "./routes";
 
 function App() {
   return (
-    <>
-      <Login />
-    </>
+    <AuthProvider>
+      <Routes />
+    </AuthProvider>
   );
 }
 

@@ -1,7 +1,12 @@
 import { useState } from "react";
 import { login } from "../services/authService";
+import { useAuth } from "../provider/authProvider";
+import { useNavigate } from "react-router-dom";
 
 function Login() {
+  const { setToken } = useAuth();
+  const navigate = useNavigate();
+
   const [error, setError] = useState("");
 
   const [userInput, setUserInput] = useState({
@@ -21,7 +26,10 @@ function Login() {
 
     try {
       const response = await login({ ...userInput });
-      console.log(response);
+      if (response.token) {
+        setToken(response.token);
+        navigate("/", { replace: true });
+      }
     } catch (err) {
       if (err.response) {
         setError(err.response.data.message);
@@ -33,7 +41,7 @@ function Login() {
 
   return (
     <div className="w-screen h-screen bg-[#1d3557]  flex flex-col items-center">
-      <p className="text-white text-6xl mb-10 mt-10">Login</p>
+      <p className="text-white text-6xl mb-10 mt-10">Admin Login</p>
       <form
         className="bg-[#1d3557] w-[50%] border-2 border-indigo-500 shadow-md rounded px-8 pt-8 pb-12 mb-4"
         onSubmit={handleSubmit}
@@ -47,7 +55,7 @@ function Login() {
             Username
           </label>
           <input
-            className="shadow appearance-none text-white border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            className="shadow appearance-none text-white border rounded w-full py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
             value={userInput.username}
             name="username"
             id="username"
@@ -64,7 +72,7 @@ function Login() {
             Password
           </label>
           <input
-            className="shadow appearance-none text-white  border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            className="shadow appearance-none text-white  border rounded w-full py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
             value={userInput.password}
             name="password"
             id="password"
