@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { getPosts, putPublish } from "../services/postService";
 import { useNavigate } from "react-router-dom";
+import Navbar from "./Navbar";
 
 function Posts() {
   const navigate = useNavigate();
@@ -44,6 +45,7 @@ function Posts() {
   if (error) return <p>Error: {error}</p>;
   return (
     <div className="min-h-screen w-screen  bg-[#1d3557]">
+      <Navbar />
       <h1 className="text-white text-5xl mt-4 text-center ">Articles</h1>
 
       <ul className="w-full flex flex-col items-center mt-7">
