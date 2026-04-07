@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getPosts } from "../services/postService";
+import { getPosts, putPublish } from "../services/postService";
 import { useNavigate } from "react-router-dom";
 
 function Posts() {
@@ -7,6 +7,22 @@ function Posts() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const handleStatus = async (postid, published) => {
+    try {
+      await putPublish(postid, { published: !published });
+
+      const response = await getPosts();
+
+      setPosts([...response]);
+    } catch (err) {
+      if (err.response) {
+        console.log(err.response.data.message);
+      } else {
+        console.log("Something went wrong. Please try again.");
+      }
+    }
+  };
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -32,10 +48,14 @@ function Posts() {
 
       <ul className="w-full flex flex-col items-center mt-7">
         {posts.map((post) => (
-          <li
-            className="
-  w-[50%] border-2 text-center text-4xl text-white border-indigo-500
-  shadow-md rounded px-8 pt-8 pb-12 mb-7
+          <div
+            key={post.id}
+            className="w-full flex flex-col mb-7 items-center justify-center"
+          >
+            <li
+              className="
+  w-[50%] border-2 text-center text-4xl mb-4 text-white border-indigo-500
+  shadow-md rounded px-8 pt-8 pb-12 
   transform transition duration-300 ease-in-out
   hover:bg-indigo-500/20
   hover:scale-105
@@ -43,17 +63,37 @@ function Posts() {
   hover:text-gray-300
   hover:cursor-pointer
 "
-            key={post.id}
-            onClick={() => navigate(`/posts/${post.id}`)}
-          >
-            {post.title}
-            <p className="text-lg mt-4">{post.user.username}</p>
-            <p className="text-lg mt-4">
-              {post.uploadAt
-                ? new Date(post.uploadAt).toLocaleDateString("en-US")
-                : "No date available"}
-            </p>
-          </li>
+              onClick={() => navigate(`/posts/${post.id}`)}
+            >
+              {post.title}
+              <p className="text-lg mt-4">{post.user.username}</p>
+              <p className="text-lg mt-4">
+                {post.uploadAt
+                  ? new Date(post.uploadAt).toLocaleDateString("en-US")
+                  : "No date available"}
+              </p>
+            </li>
+            {!post.isPublished && (
+              <button
+                onClick={() => {
+                  handleStatus(post.id, post.isPublished);
+                }}
+                className="inline-flex  items-center justify-center bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline cursor-pointer"
+              >
+                Not Published
+              </button>
+            )}
+            {post.isPublished && (
+              <button
+                onClick={() => {
+                  handleStatus(post.id, post.isPublished);
+                }}
+                className="inline-flex  items-center justify-center bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline cursor-pointer"
+              >
+                Published
+              </button>
+            )}
+          </div>
         ))}
       </ul>
     </div>
