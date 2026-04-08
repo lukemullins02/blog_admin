@@ -15,6 +15,7 @@ function ExpandPost() {
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [errorComment, setErrorComment] = useState(null);
   const [userInput, setUserInput] = useState({
     title: "",
     blog: "",
@@ -88,10 +89,15 @@ function ExpandPost() {
       const updatedComments = await getComments(id);
       setComments(updatedComments);
 
+      setErrorComment(null);
       setEditingCommentId(null);
       setEditedText("");
     } catch (err) {
-      console.log(err);
+      if (err.response) {
+        setErrorComment(err.response.data.message);
+      } else {
+        setErrorComment("Something went wrong. Please try again.");
+      }
     }
   };
 
@@ -126,12 +132,12 @@ function ExpandPost() {
         {error && <p className="text-xl text-red-600">{error}</p>}
 
         <div className="w-[50%] mb-3">
-          <label className="block text-white text-lg font-bold mb-3">
+          <label className="block text-white text-xl font-bold mb-3">
             Title
           </label>
 
           <input
-            className="shadow appearance-none text-white border rounded w-full py-2 px-3 leading-tight focus:outline-none"
+            className="shadow appearance-none t ext-xl text-white border rounded w-full py-2 px-3 leading-tight focus:outline-none"
             value={userInput.title}
             onChange={handleChange}
             name="title"
@@ -141,12 +147,12 @@ function ExpandPost() {
         </div>
 
         <div className="w-[50%] mb-5">
-          <label className="block text-white text-lg font-bold mb-3">
+          <label className="block text-white text-xl font-bold mb-3">
             Blog
           </label>
 
           <textarea
-            className="shadow h-96 appearance-none text-white border rounded w-full py-2 px-3 leading-tight focus:outline-none"
+            className="shadow h-96 appearance-none text-xl text-white border rounded w-full py-2 px-3 leading-tight focus:outline-none"
             value={userInput.blog}
             onChange={handleChange}
             name="blog"
@@ -185,23 +191,26 @@ function ExpandPost() {
                 </p>
                 {editingCommentId === comment.id ? (
                   <>
+                    {errorComment && (
+                      <p className="text-xl text-red-600">{errorComment}</p>
+                    )}
                     <textarea
-                      className="w-full mt-3 bg-[#243b55] text-white p-3 rounded border border-gray-500 focus:outline-none"
+                      className="w-full mt-3 bg-[#1d3557] text-white p-3 rounded border border-gray-400 focus:outline-none"
                       value={editedText}
                       onChange={(e) => setEditedText(e.target.value)}
                     />
 
-                    <div className="flex gap-3 mt-3">
+                    <div className="flex justify-center gap-3 mt-3">
                       <button
                         onClick={() => handleSaveEdit(comment.id)}
-                        className="cursor-pointer bg-green-500 hover:bg-green-700 text-white px-3 py-1 rounded"
+                        className="cursor-pointer bg-green-500 hover:bg-green-700 text-xl font-bold text-white px-3 py-1 rounded"
                       >
                         Save
                       </button>
 
                       <button
                         onClick={handleCancelEdit}
-                        className="cursor-pointer bg-gray-500 hover:bg-gray-700 text-white px-3 py-1 rounded"
+                        className="cursor-pointer bg-gray-500 hover:bg-gray-700 text-xl font-bold text-white px-3 py-1 rounded"
                       >
                         Cancel
                       </button>
@@ -209,21 +218,21 @@ function ExpandPost() {
                   </>
                 ) : (
                   <>
-                    <p className="mt-3 text-lg break-words whitespace-pre-wrap">
+                    <p className="mt-3 text-2xl wrap-break-word  whitespace-pre-wrap">
                       {comment.text}
                     </p>
 
-                    <div className="flex gap-3 mt-4">
+                    <div className="flex justify-center gap-3 mt-4">
                       <button
                         onClick={() => handleEditClick(comment)}
-                        className="bg-blue-500 cursor-pointer hover:bg-blue-700 text-white px-3 py-1 rounded"
+                        className="bg-blue-500 hover:bg-blue-700  text-xl text-white font-bold  py-2 px-4 rounded cursor-pointer"
                       >
                         Edit
                       </button>
 
                       <button
                         onClick={() => handleDelete(id, comment.id)}
-                        className="bg-red-500 cursor-pointer hover:bg-red-700 text-white px-3 py-1 rounded"
+                        className="bg-red-500 cursor-pointer hover:bg-red-700 text-xl font-bold  text-white px-3 py-1 rounded"
                       >
                         Delete
                       </button>
