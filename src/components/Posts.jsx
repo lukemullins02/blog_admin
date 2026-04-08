@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getPosts, putPublish } from "../services/postService";
+import { deletePost, getPosts, putPublish } from "../services/postService";
 import { useNavigate } from "react-router-dom";
 import Navbar from "./Navbar";
 
@@ -16,6 +16,28 @@ function Posts() {
       const response = await getPosts();
 
       setPosts([...response]);
+    } catch (err) {
+      if (err.response) {
+        console.log(err.response.data.message);
+      } else {
+        console.log("Something went wrong. Please try again.");
+      }
+    }
+  };
+
+  const handleDelete = async (postid) => {
+    try {
+      const userInput = prompt(
+        "Are you sure you want to delete? Enter yes or no.",
+      );
+
+      if (userInput.toLowerCase() === "yes") {
+        await deletePost(postid);
+
+        const response = await getPosts();
+
+        setPosts([...response]);
+      }
     } catch (err) {
       if (err.response) {
         console.log(err.response.data.message);
@@ -75,26 +97,36 @@ function Posts() {
                   : "No date available"}
               </p>
             </li>
-            {!post.isPublished && (
+            <div className="flex items-center justify-center mt-8 gap-3">
+              {!post.isPublished && (
+                <button
+                  onClick={() => {
+                    handleStatus(post.id, post.isPublished);
+                  }}
+                  className="inline-flex  items-center justify-center bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline cursor-pointer"
+                >
+                  Not Published
+                </button>
+              )}
+              {post.isPublished && (
+                <button
+                  onClick={() => {
+                    handleStatus(post.id, post.isPublished);
+                  }}
+                  className="inline-flex  items-center justify-center bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline cursor-pointer"
+                >
+                  Published
+                </button>
+              )}
               <button
                 onClick={() => {
-                  handleStatus(post.id, post.isPublished);
+                  handleDelete(post.id);
                 }}
-                className="inline-flex  items-center justify-center bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline cursor-pointer"
+                className="inline-flex  items-center justify-center bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline cursor-pointer"
               >
-                Not Published
+                Delete
               </button>
-            )}
-            {post.isPublished && (
-              <button
-                onClick={() => {
-                  handleStatus(post.id, post.isPublished);
-                }}
-                className="inline-flex  items-center justify-center bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline cursor-pointer"
-              >
-                Published
-              </button>
-            )}
+            </div>
           </div>
         ))}
       </ul>
