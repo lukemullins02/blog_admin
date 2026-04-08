@@ -137,7 +137,7 @@ function ExpandPost() {
           </label>
 
           <input
-            className="shadow appearance-none t ext-xl text-white border rounded w-full py-2 px-3 leading-tight focus:outline-none"
+            className="shadow appearance-none text-xl text-white border rounded w-full py-2 px-3 leading-tight focus:outline-none"
             value={userInput.title}
             onChange={handleChange}
             name="title"

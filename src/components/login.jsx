@@ -55,7 +55,7 @@ function Login() {
             Username
           </label>
           <input
-            className="shadow appearance-none text-white border rounded w-full py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
+            className="shadow appearance-none text-white border border-indigo-500 rounded w-full py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
             value={userInput.username}
             name="username"
             id="username"
@@ -72,7 +72,7 @@ function Login() {
             Password
           </label>
           <input
-            className="shadow appearance-none text-white  border rounded w-full py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
+            className="shadow appearance-none text-white border border-indigo-500 rounded w-full py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
             value={userInput.password}
             name="password"
             id="password"

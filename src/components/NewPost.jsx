@@ -47,13 +47,13 @@ function NewPost() {
         {error && <p className="text-xl text-red-600">{error}</p>}
         <div className="w-[50%] mb-3">
           <label
-            className="block text-white text-lg font-bold mb-3"
+            className="block text-white text-xl font-bold mb-3"
             htmlFor="title"
           >
             Title{" "}
           </label>
           <input
-            className="shadow appearance-none text-white  border rounded w-full py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
+            className="shadow appearance-none text-white  border rounded w-full py-2 px-3 text-xl leading-tight focus:outline-none focus:shadow-outline"
             value={userInput.title}
             onChange={handleChange}
             name="title"
@@ -64,13 +64,13 @@ function NewPost() {
         </div>
         <div className="w-[50%] mb-5">
           <label
-            className="block text-white text-lg font-bold mb-3"
+            className="block text-white text-xl font-bold mb-3"
             htmlFor="blog"
           >
             Blog{" "}
           </label>
           <textarea
-            className="shadow h-96 appearance-none text-white  border rounded w-full py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
+            className="shadow h-96 appearance-none text-white text-xl border rounded w-full py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
             value={userInput.blog}
             onChange={handleChange}
             name="blog"
