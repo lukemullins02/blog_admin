@@ -4,6 +4,7 @@ import { ProtectedRoute } from "./ProtectedRoute";
 import Login from "../components/Login";
 import Posts from "../components/Posts";
 import Logout from "../components/Logout";
+import NewPost from "../components/NewPost";
 
 const Routes = () => {
   const { token } = useAuth();
@@ -16,6 +17,10 @@ const Routes = () => {
         {
           path: "/",
           element: <Posts />,
+        },
+        {
+          path: "/create-post",
+          element: <NewPost />,
         },
         { path: "/logout", element: <Logout /> },
         {

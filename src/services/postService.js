@@ -1,5 +1,15 @@
 import api from "../api/axios";
 
+export const postBlog = async (userInput) => {
+  const response = await api.post("/posts", userInput, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+
+  return response.data;
+};
+
 export const getPosts = async () => {
   const response = await api.get("/posts", {
     headers: {
