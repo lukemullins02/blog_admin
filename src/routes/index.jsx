@@ -5,6 +5,7 @@ import Login from "../components/Login";
 import Posts from "../components/Posts";
 import Logout from "../components/Logout";
 import NewPost from "../components/NewPost";
+import ExpandPost from "../components/ExpandPost";
 
 const Routes = () => {
   const { token } = useAuth();
@@ -23,6 +24,10 @@ const Routes = () => {
           element: <NewPost />,
         },
         { path: "/logout", element: <Logout /> },
+        {
+          path: "/posts/:id",
+          element: <ExpandPost />,
+        },
         {
           path: "*",
           element: <h1>Invalid Route</h1>,

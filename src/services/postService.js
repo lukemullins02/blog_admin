@@ -40,6 +40,16 @@ export const putPublish = async (id, status) => {
   return response.data;
 };
 
+export const putPost = async (id, userInput) => {
+  const response = await api.put(`/posts/${id}`, userInput, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+
+  return response.data;
+};
+
 export const deletePost = async (id) => {
   const response = await api.delete(`/posts/${id}`, {
     headers: {
