@@ -1,6 +1,10 @@
 import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { getComments } from "../services/commentService";
+import {
+  deleteComment,
+  getComments,
+  putComment,
+} from "../services/commentService";
 import { getPost, putPost } from "../services/postService";
 import Navbar from "./Navbar";
 import { useNavigate } from "react-router-dom";
@@ -15,6 +19,9 @@ function ExpandPost() {
     title: "",
     blog: "",
   });
+
+  const [editingCommentId, setEditingCommentId] = useState(null);
+  const [editedText, setEditedText] = useState("");
 
   const { id } = useParams();
 
@@ -43,11 +50,55 @@ function ExpandPost() {
     }
   };
 
+  const handleDelete = async (postid, commentid) => {
+    try {
+      const confirmDelete = prompt(
+        "Are you sure you want to delete? Enter yes or no.",
+      );
+
+      if (confirmDelete?.toLowerCase() === "yes") {
+        await deleteComment(postid, commentid);
+
+        const response = await getComments(postid);
+        setComments(response);
+      }
+    } catch (err) {
+      if (err.response) {
+        console.log(err.response.data.message);
+      } else {
+        console.log("Something went wrong. Please try again.");
+      }
+    }
+  };
+
+  const handleEditClick = (comment) => {
+    setEditingCommentId(comment.id);
+    setEditedText(comment.text);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingCommentId(null);
+    setEditedText("");
+  };
+
+  const handleSaveEdit = async (commentId) => {
+    try {
+      await putComment(id, commentId, { text: editedText });
+
+      const updatedComments = await getComments(id);
+      setComments(updatedComments);
+
+      setEditingCommentId(null);
+      setEditedText("");
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   useEffect(() => {
     const fetchPosts = async () => {
       try {
         const resPost = await getPost(id);
-
         const resComment = await getComments(id);
 
         setComments(resComment);
@@ -62,88 +113,125 @@ function ExpandPost() {
     fetchPosts();
   }, [id]);
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <p className="text-white text-xl">Loading...</p>;
 
   return (
-    <div className="min-h-screen w-screen  bg-[#1d3557]">
-      {" "}
+    <div className="min-h-screen w-screen bg-[#1d3557]">
       <Navbar />
+
       <form
         onSubmit={handleSubmit}
         className="w-full flex flex-col items-center mt-7"
       >
         {error && <p className="text-xl text-red-600">{error}</p>}
+
         <div className="w-[50%] mb-3">
-          <label
-            className="block text-white text-lg font-bold mb-3"
-            htmlFor="title"
-          >
-            Title{" "}
+          <label className="block text-white text-lg font-bold mb-3">
+            Title
           </label>
+
           <input
-            className="shadow appearance-none text-white  border rounded w-full py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
+            className="shadow appearance-none text-white border rounded w-full py-2 px-3 leading-tight focus:outline-none"
             value={userInput.title}
             onChange={handleChange}
             name="title"
-            id="title"
             type="text"
             required
           />
         </div>
+
         <div className="w-[50%] mb-5">
-          <label
-            className="block text-white text-lg font-bold mb-3"
-            htmlFor="blog"
-          >
-            Blog{" "}
+          <label className="block text-white text-lg font-bold mb-3">
+            Blog
           </label>
+
           <textarea
-            className="shadow h-96 appearance-none text-white  border rounded w-full py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
+            className="shadow h-96 appearance-none text-white border rounded w-full py-2 px-3 leading-tight focus:outline-none"
             value={userInput.blog}
             onChange={handleChange}
             name="blog"
-            id="blog"
             required
-          ></textarea>
+          />
         </div>
-        <div>
-          <button
-            className="inline-flex cursor-pointer items-center justify-center bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-            type="submit"
-          >
-            Update Post
-          </button>
-        </div>
+
+        <button
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded cursor-pointer"
+          type="submit"
+        >
+          Update Post
+        </button>
       </form>
-      <div className="w-full text-white flex flex-col  mt-7">
-        <h1 className="text-4xl mb-4 ml-10">Comments</h1>
+      <div className="w-full text-white flex flex-col mt-7">
+        <h1 className="text-4xl mb-6 ml-10">Comments</h1>
 
         <ul className="w-full flex flex-col items-center mt-4">
           {comments.map((comment) => (
-            <li
-              className="
-  w-[30%] border  text-2xl text-white border-indigo-500
-  shadow-md rounded px-2 pt-2 pb-4 mb-7
-  transform transition duration-300 ease-in-out
-
-  "
+            <div
               key={comment.id}
+              className="w-full flex flex-col mb-7 items-center justify-center"
             >
-              <p className="text-xl mt-1">
-                {comment.user.username}{" "}
-                <span className="text-base text-gray-400">
-                  {" "}
-                  {comment.uploadAt
-                    ? new Date(comment.uploadAt).toLocaleString("en-US", {
-                        month: "2-digit",
-                        day: "2-digit",
-                        year: "numeric",
-                      })
-                    : "No date available"}
-                </span>
-              </p>
-              {comment.text}
-            </li>
+              <li className="w-[30%] border text-2xl text-white border-indigo-500 shadow-md rounded px-4 pt-3 pb-4">
+                <p className="text-xl">
+                  {comment.user.username}
+                  <span className="text-base text-gray-400 ml-2">
+                    {comment.uploadAt
+                      ? new Date(comment.uploadAt).toLocaleString("en-US", {
+                          month: "2-digit",
+                          day: "2-digit",
+                          year: "numeric",
+                        })
+                      : "No date available"}
+                  </span>
+                </p>
+                {editingCommentId === comment.id ? (
+                  <>
+                    <textarea
+                      className="w-full mt-3 bg-[#243b55] text-white p-3 rounded border border-gray-500 focus:outline-none"
+                      value={editedText}
+                      onChange={(e) => setEditedText(e.target.value)}
+                    />
+
+                    <div className="flex gap-3 mt-3">
+                      <button
+                        onClick={() => handleSaveEdit(comment.id)}
+                        className="cursor-pointer bg-green-500 hover:bg-green-700 text-white px-3 py-1 rounded"
+                      >
+                        Save
+                      </button>
+
+                      <button
+                        onClick={handleCancelEdit}
+                        className="cursor-pointer bg-gray-500 hover:bg-gray-700 text-white px-3 py-1 rounded"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <p className="mt-3 text-lg break-words whitespace-pre-wrap">
+                      {comment.text}
+                    </p>
+
+                    <div className="flex gap-3 mt-4">
+                      <button
+                        onClick={() => handleEditClick(comment)}
+                        className="bg-blue-500 cursor-pointer hover:bg-blue-700 text-white px-3 py-1 rounded"
+                      >
+                        Edit
+                      </button>
+
+                      <button
+                        onClick={() => handleDelete(id, comment.id)}
+                        className="bg-red-500 cursor-pointer hover:bg-red-700 text-white px-3 py-1 rounded"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </>
+                )}
+              </li>
+            </div>
           ))}
         </ul>
       </div>
